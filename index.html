@@ -224,7 +224,7 @@ header{padding:0 16px;}
       <div class="date-stamp">📅 <span id="top-date"></span></div>
     </div>
 
-```
+
 <div class="mode-toggle">
   <button class="mode-btn active" id="mode-in"  onclick="setMode('in')">→ Sign In</button>
   <button class="mode-btn"        id="mode-out" onclick="setMode('out')">← Sign Out</button>
@@ -360,7 +360,7 @@ header{padding:0 16px;}
   </div>
 
 </div>
-```
+
 
   </div>
 </div>
@@ -613,15 +613,19 @@ function clearReturning(){
   toggleBtn();
 }
 
+
 function toggleBtn(){
-  const terms=document.getElementById('f-terms').checked;
-  if(returningVisitor){
-    document.getElementById('submit-btn').disabled=!terms||!document.getElementById('rc-reason').value;
+  const terms = document.getElementById('f-terms').checked;
+  const btn = document.getElementById('submit-btn');
+
+  if (returningVisitor) {
+    const reason = document.getElementById('rc-reason').value;
+    btn.disabled = !terms || !reason;
   } else {
-    const name=document.getElementById('f-name').value.trim();
-    const org=document.getElementById('f-org').value.trim();
-    const reason=document.getElementById('f-reason').value;
-    document.getElementById('submit-btn').disabled=!terms||!name||!org||!reason;
+    const name = document.getElementById('f-name').value.trim();
+    const org = document.getElementById('f-org').value.trim();
+    const reason = document.getElementById('f-reason').value;
+    btn.disabled = !terms || !name || !org || !reason;
   }
 }
 
