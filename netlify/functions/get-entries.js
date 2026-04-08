@@ -3,29 +3,29 @@ const { getStore } = require("@netlify/blobs");
 exports.handler = async () => {
   try {
     const store = getStore({
-      name: "sign-in-entries",
-      consistency: "strong"
+      name: "sign-in-entries",                     // ✅ must match save-entry
+      siteID: process.env.NETLIFY_SITE_ID,         // ✅ required
+      token: process.env.NETLIFY_BLOBS_TOKEN,      // ✅ required
+      consistency: "strong",
     });
 
     const entries = [];
 
-    for await (const entry of store.values()) {
-      entries.push(entry);
+    for await (const { key, value } of store.entries()) {
+      entries.push(value);
     }
 
     return {
       statusCode: 200,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entries),
-      headers: {
-        "Content-Type": "application/json"
-      }
     };
   } catch (err) {
-    console.error("Fetch error:", err);
-
+    console.error("Get error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: err.message }),
     };
   }
 };
+``
