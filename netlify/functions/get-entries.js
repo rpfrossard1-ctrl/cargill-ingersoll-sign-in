@@ -3,15 +3,15 @@ const { getStore } = require("@netlify/blobs");
 exports.handler = async () => {
   try {
     const store = getStore({
-      name: "sign-in-entries",                     // ✅ must match save-entry
-      siteID: process.env.NETLIFY_SITE_ID,         // ✅ required
-      token: process.env.NETLIFY_BLOBS_TOKEN,      // ✅ required
+      name: "sign-in-entries",                     // MUST match save-entry
+      siteID: process.env.NETLIFY_SITE_ID,         // REQUIRED
+      token: process.env.NETLIFY_BLOBS_TOKEN,      // REQUIRED
       consistency: "strong",
     });
 
     const entries = [];
 
-    for await (const { key, value } of store.entries()) {
+    for await (const { value } of store.entries()) {
       entries.push(value);
     }
 
