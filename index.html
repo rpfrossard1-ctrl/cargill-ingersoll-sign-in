@@ -522,7 +522,14 @@ function getRegistry(){
 const fmtLong=d=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 const fmtShort=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 const fmtTime=d=>d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function x(s){
+  return String(s || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
 document.getElementById('top-date').textContent=fmtLong(new Date());
 
 // ── Password ──
@@ -646,10 +653,20 @@ async function doSignIn(){
   const btn=document.getElementById('submit-btn');
   btn.disabled=true;
   btn.textContent='Saving…';
-  const entry={id:Date.now().toString(),name,org,reason,terms:terms?'Yes':'No',signIn:new Date().toISOString(),signOut:null,status:'in'};
+  
+const entry = {
+  name,
+  org,
+  reason,
+  terms: terms ? 'Yes' : 'No',
+  signIn: new Date().toISOString(),
+  signOut: null,
+  status: 'in'
+};
+
   try {
-    await saveEntry(entry);
-    data.unshift(entry);
+    const saved = await saveEntry(entry);
+data.unshift({ ...entry, id: saved.id });
     document.getElementById('in-form').style.display='none';
     const sv=document.getElementById('success-in');
     sv.classList.add('show');
