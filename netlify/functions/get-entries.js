@@ -10,20 +10,18 @@ exports.handler = async () => {
     });
 
     const entries = [];
-    let cursor = undefined;
+    let cursor;
 
-    // ✅ Fully compatible paginated listing
     do {
       const result = await store.list({ cursor });
 
-      if (result?.blobs?.length) {
-        for (const { key } of result.blobs) {
-          const value = await store.get(key);
-          if (value) entries.push(value);
-        }
+      for (const { key } of result.blobs || []) {
+        // ✅ THIS IS THE KEY FIX
+        const value = await store.get(key, { type: "json" });
+        if (value) entries.push(value);
       }
 
-      cursor = result?.next_cursor;
+      cursor = result.next_cursor;
     } while (cursor);
 
     return {
