@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method not allowed" };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
@@ -17,18 +17,18 @@ exports.handler = async (event) => {
     const incoming = JSON.parse(event.body);
     const id = incoming.id || crypto.randomUUID();
 
-    // ✅ LOAD existing record if it exists
-    const existing = await store.get(id).catch(() => null);
+    const existingRaw = await store.get(id);
+    const existing = existingRaw ? JSON.parse(existingRaw) : {};
 
-    // ✅ MERGE instead of overwrite
     const record = {
-      ...(existing ?? {}),
+      ...existing,
       ...incoming,
       id,
       updatedAt: new Date().toISOString(),
     };
 
-    await store.set(id, record);
+    // ✅ Explicitly stringify
+    await store.set(id, JSON.stringify(record));
 
     return {
       statusCode: 200,
