@@ -12,8 +12,11 @@ exports.handler = async () => {
     const entries = [];
 
     // ✅ Correct API for Netlify Blobs runtime
-    for await (const value of store.values()) {
-      entries.push(value);
+    const keys = await store.list();
+
+    for (const key of keys) {
+      const value = await store.get(key);
+      if (value) entries.push(value);
     }
 
     return {
