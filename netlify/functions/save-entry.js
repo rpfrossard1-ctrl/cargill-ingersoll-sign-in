@@ -3,10 +3,7 @@ const crypto = require("crypto");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: "Method Not Allowed",
-    };
+    return { statusCode: 405, body: "Method not allowed" };
   }
 
   try {
@@ -17,16 +14,21 @@ exports.handler = async (event) => {
       consistency: "strong",
     });
 
-    const data = JSON.parse(event.body);
+    const incoming = JSON.parse(event.body);
+    const id = incoming.id || crypto.randomUUID();
 
-    // Reuse existing ID if present, otherwise create one
-    const id = data.id || crypto.randomUUID();
+    // ✅ LOAD existing record if it exists
+    const existing = await store.get(id).catch(() => null);
 
-    await store.set(id, {
-      ...data,
+    // ✅ MERGE instead of overwrite
+    const record = {
+      ...(existing ?? {}),
+      ...incoming,
       id,
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    await store.set(id, record);
 
     return {
       statusCode: 200,
@@ -34,7 +36,6 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error("Save error:", err);
-
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message }),
