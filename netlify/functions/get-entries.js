@@ -10,14 +10,21 @@ exports.handler = async () => {
     });
 
     const entries = [];
+    let cursor = undefined;
 
-    // ✅ Correct handling of store.list() result
-    const { keys } = await store.list();
+    // ✅ Fully compatible paginated listing
+    do {
+      const result = await store.list({ cursor });
 
-    for (const key of keys) {
-      const value = await store.get(key);
-      if (value) entries.push(value);
-    }
+      if (result?.blobs?.length) {
+        for (const { key } of result.blobs) {
+          const value = await store.get(key);
+          if (value) entries.push(value);
+        }
+      }
+
+      cursor = result?.next_cursor;
+    } while (cursor);
 
     return {
       statusCode: 200,
@@ -32,3 +39,4 @@ exports.handler = async () => {
     };
   }
 };
+``
