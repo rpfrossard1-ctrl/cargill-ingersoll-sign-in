@@ -3,15 +3,16 @@ const { getStore } = require("@netlify/blobs");
 exports.handler = async () => {
   try {
     const store = getStore({
-      name: "sign-in-entries",                     // MUST match save-entry
-      siteID: process.env.NETLIFY_SITE_ID,         // REQUIRED
-      token: process.env.NETLIFY_BLOBS_TOKEN,      // REQUIRED
+      name: "sign-in-entries",
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_BLOBS_TOKEN,
       consistency: "strong",
     });
 
     const entries = [];
 
-    for await (const { value } of store.entries()) {
+    // ✅ Correct API for Netlify Blobs runtime
+    for await (const value of store.values()) {
       entries.push(value);
     }
 
@@ -28,4 +29,3 @@ exports.handler = async () => {
     };
   }
 };
-``
