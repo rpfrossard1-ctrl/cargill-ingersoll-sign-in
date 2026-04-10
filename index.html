@@ -520,7 +520,22 @@ function getRegistry(){
 
 // ── Helpers ──
 const fmtLong=d=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-const fmtShort=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+function safeDate(value) {
+  if (!value) return '—';
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? '—' : d;
+}
+
+const fmtShort = d => {
+  const date = safeDate(d);
+  if (date === '—') return '—';
+  return (
+    date.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) +
+    ' ' +
+    date.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+  );
+};
+
 const fmtTime=d=>d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
 function x(s){
