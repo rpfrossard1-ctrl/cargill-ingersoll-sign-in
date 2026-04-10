@@ -17,9 +17,14 @@ exports.handler = async () => {
 
       for (const { key } of result.blobs || []) {
         const raw = await store.get(key);
-        if (raw) {
-          entries.push(JSON.parse(raw)); // ✅ explicit parse
-        }
+if (raw) {
+  const value =
+    typeof raw === "string"
+      ? JSON.parse(raw)
+      : raw; // ✅ already an object
+
+  entries.push(value);
+}
       }
 
       cursor = result.next_cursor;
