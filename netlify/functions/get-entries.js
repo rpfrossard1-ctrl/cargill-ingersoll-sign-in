@@ -16,9 +16,10 @@ exports.handler = async () => {
       const result = await store.list({ cursor });
 
       for (const { key } of result.blobs || []) {
-        // ✅ THIS IS THE KEY FIX
-        const value = await store.get(key, { type: "json" });
-        if (value) entries.push(value);
+        const raw = await store.get(key);
+        if (raw) {
+          entries.push(JSON.parse(raw)); // ✅ explicit parse
+        }
       }
 
       cursor = result.next_cursor;
