@@ -1,0 +1,8 @@
+
+{
+  "name": "cargill-visitor-log",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^7.4.0"
+  }
+}
