@@ -2,27 +2,23 @@ const { getStore } = require("@netlify/blobs");
 
 exports.handler = async () => {
   try {
-    const store = getStore({
-      name: "sign-in-entries",
-      consistency: "strong"
-    });
+    const store = getStore("sign-in-entries");
+    const { blobs } = await store.list();
 
-    const entries = [];
-
-    for await (const { key, value } of store.entries()) {
-      entries.push({ ...value, id: key });
-    }
+    const entries = await Promise.all(
+      blobs.map(b => store.getJSON(b.key))
+    );
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entries)
     };
   } catch (err) {
-    console.error("Load failed:", err);
+    console.error("get-entries error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
     };
   }
 };
+``

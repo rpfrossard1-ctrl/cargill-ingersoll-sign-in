@@ -1,32 +1,23 @@
 const { getStore } = require("@netlify/blobs");
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method not allowed" };
-  }
-
   try {
-    const entry = JSON.parse(event.body);
+    if (event.httpMethod !== "POST") {
+      return { statusCode: 405, body: "Method Not Allowed" };
+    }
 
-    // ✅ Use frontend-provided ID
-    const id = entry.id ?? crypto.randomUUID();
+    const store = getStore("sign-in-entries");
+    const data = JSON.parse(event.body);
 
-    const store = getStore({
-      name: "sign-in-entries",
-      consistency: "strong"
-    });
-
-    await store.set(id, {
-      ...entry,
-      id
-    });
+    const key = `entry-${data.id || Date.now()}`;
+    await store.setJSON(key, data);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, id })
+      body: JSON.stringify({ status: "Saved" })
     };
   } catch (err) {
-    console.error("Save failed:", err);
+    console.error("Save error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
