@@ -2,7 +2,13 @@
 const { getStore } = require("@netlify/blobs");
 
 exports.handler = async () => {
-  const store = getStore("sign-in-entries");
+  
+const store = getStore({
+  name: "sign-in-entries",
+  siteID: process.env.NETLIFY_BLOBS_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+})
+;
   await store.setJSON("blobs-test", { ok: true });
 
   return {
