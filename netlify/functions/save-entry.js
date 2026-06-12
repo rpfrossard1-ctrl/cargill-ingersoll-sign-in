@@ -6,7 +6,13 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const store = getStore("sign-in-entries");
+    
+const store = getStore({
+  name: "sign-in-entries",
+  siteID: process.env.NETLIFY_BLOBS_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+})
+;
     const data = JSON.parse(event.body);
 
     const key = `entry-${data.id || Date.now()}`;
